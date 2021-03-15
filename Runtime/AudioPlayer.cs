@@ -3,87 +3,92 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class AudioPlayer : MonoBehaviour
+
+namespace Erethan.AudioService
 {
-	[SerializeField] private AudioSystem system = default;
-	[SerializeField] private AudioCue _audioCue = default;
-	[SerializeField] private bool _playOnStart = default;
 
-	[SerializeField] private UnityEvent FinishEvent = default;
-
-	/*
-	[Header("Configuration")]
-	[SerializeField] private AudioConfigurationSO _audioConfiguration = default;
-	*/
-
-	private List<AudioPlayOrder> _ongoingOrders;
-	
-	private void Start()
+	public class AudioPlayer : MonoBehaviour
 	{
-		_ongoingOrders = new List<AudioPlayOrder>();
-		if (_playOnStart)
-			StartCoroutine(PlayDelayed());
-	}
+		[SerializeField] private AudioSystem system = default;
+		[SerializeField] private AudioCue _audioCue = default;
+		[SerializeField] private bool _playOnStart = default;
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            for (int i = 0; i < _ongoingOrders.Count; i++)
-            {
+		[SerializeField] private UnityEvent FinishEvent = default;
 
-				if (!(_ongoingOrders[i].State == AudioPlayOrder.PlayState.Playing))
-                {
-					continue;
-                }
-				system.StopAudio(_ongoingOrders[i]);
-            }
-			_ongoingOrders.Clear();
-        }
-		else if(Input.GetKeyDown(KeyCode.P))
-        {
-			if(_ongoingOrders.Count == 0)
-            {
-				PlayAudioCue();
-            }
-        }
-    }
+		/*
+		[Header("Configuration")]
+		[SerializeField] private AudioConfigurationSO _audioConfiguration = default;
+		*/
 
-    private IEnumerator PlayDelayed()
-	{
-		yield return new WaitForSeconds(.1f);
+		private List<AudioPlayOrder> _ongoingOrders;
 
-		PlayAudioCue();
-	}
-
-	public void PlayAudioCue()
-	{
-        foreach (var order in _audioCue.GetNewOrders())
-        {
-            order.Finish += OnOrderFinish;
-			_ongoingOrders.Add(order);
-
-			system.PlayAudio(order);
-		}
-	}
-
-    public void StopAudioCue()
-	{
-        foreach (var order in _ongoingOrders)
-        {
-			system.StopAudio(order);
-		}
-	}
-
-    private void OnOrderFinish(AudioPlayOrder finishedOrder)
-    {
-		finishedOrder.Finish -= OnOrderFinish;
-		_ongoingOrders.Remove(finishedOrder);
-
-		if (finishedOrder.State == AudioPlayOrder.PlayState.Finished)
+		private void Start()
 		{
-			FinishEvent.Invoke();
+			_ongoingOrders = new List<AudioPlayOrder>();
+			if (_playOnStart)
+				StartCoroutine(PlayDelayed());
 		}
-	}
 
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.S))
+			{
+				for (int i = 0; i < _ongoingOrders.Count; i++)
+				{
+
+					if (!(_ongoingOrders[i].State == AudioPlayOrder.PlayState.Playing))
+					{
+						continue;
+					}
+					system.StopAudio(_ongoingOrders[i]);
+				}
+				_ongoingOrders.Clear();
+			}
+			else if (Input.GetKeyDown(KeyCode.P))
+			{
+				if (_ongoingOrders.Count == 0)
+				{
+					PlayAudioCue();
+				}
+			}
+		}
+
+		private IEnumerator PlayDelayed()
+		{
+			yield return new WaitForSeconds(.1f);
+
+			PlayAudioCue();
+		}
+
+		public void PlayAudioCue()
+		{
+			foreach (var order in _audioCue.GetNewOrders())
+			{
+				order.Finish += OnOrderFinish;
+				_ongoingOrders.Add(order);
+
+				system.PlayAudio(order);
+			}
+		}
+
+		public void StopAudioCue()
+		{
+			foreach (var order in _ongoingOrders)
+			{
+				system.StopAudio(order);
+			}
+		}
+
+		private void OnOrderFinish(AudioPlayOrder finishedOrder)
+		{
+			finishedOrder.Finish -= OnOrderFinish;
+			_ongoingOrders.Remove(finishedOrder);
+
+			if (finishedOrder.State == AudioPlayOrder.PlayState.Finished)
+			{
+				FinishEvent.Invoke();
+			}
+		}
+
+	}
 }

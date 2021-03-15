@@ -2,48 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Audio System", menuName = "Inside/Audio/Audio System")]
-public class AudioSystem : ScriptableObject
+
+namespace Erethan.AudioService
 {
-    private AudioSystemBehaviour _controllerBehaviour;
-    private AudioSystemBehaviour ControllerBehaviour
+
+    [CreateAssetMenu(fileName = "Audio System", menuName = "Inside/Audio/Audio System")]
+    public class AudioSystem : ScriptableObject
     {
-        get
+        private AudioSystemBehaviour _controllerBehaviour;
+        private AudioSystemBehaviour ControllerBehaviour
         {
-            if (_controllerBehaviour == null)
+            get
             {
-                _controllerBehaviour = AudioSystemBehaviour.CreateNew(this);
+                if (_controllerBehaviour == null)
+                {
+                    _controllerBehaviour = AudioSystemBehaviour.CreateNew(this);
+                }
+                return _controllerBehaviour;
             }
-            return _controllerBehaviour;
+            set
+            {
+                _controllerBehaviour = value;
+            }
         }
-        set
+
+        public void Initialize()
         {
-            _controllerBehaviour = value;
+            _ = ControllerBehaviour;
         }
+
+
+
+        public void PlayAudio(AudioPlayOrder order)
+        {
+            ControllerBehaviour.PlayAudio(order);
+        }
+
+        public void StopAudio(AudioPlayOrder order)
+        {
+            ControllerBehaviour.StopAudio(order);
+        }
+
+
+        [Header("Audio Source Pool")]
+        [SerializeField] private int _initialPoolSize = default;
+        [SerializeField] private AudioSource _audioSourcePrefab = default;
+        public int InitialPoolSize => _initialPoolSize;
+        public AudioSource AudioSourcePrefab => _audioSourcePrefab;
+
     }
-
-    public void Initialize()
-    {
-        _ = ControllerBehaviour;
-    }
-
-
-
-    public void PlayAudio(AudioPlayOrder order)
-    {
-        ControllerBehaviour.PlayAudio(order);
-    }
-
-    public void StopAudio(AudioPlayOrder order)
-    {
-        ControllerBehaviour.StopAudio(order);
-    }
-
-
-    [Header("Audio Source Pool")]
-    [SerializeField] private int _initialPoolSize = default;
-    [SerializeField] private AudioSource _audioSourcePrefab = default;
-    public int InitialPoolSize => _initialPoolSize;
-    public AudioSource AudioSourcePrefab => _audioSourcePrefab;
-
 }

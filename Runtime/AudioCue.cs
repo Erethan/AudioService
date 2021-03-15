@@ -8,7 +8,7 @@ namespace Erethan.AudioService
 	/// <summary>
 	/// A collection of audio clips that are played in parallel, and support randomisation.
 	/// </summary>
-	[CreateAssetMenu(fileName = "new AudioCue", menuName = "Inside/Audio/Audio Cue")]
+	[CreateAssetMenu(fileName = "new AudioCue", menuName = "Erethan/Audio/Audio Cue")]
 	public class AudioCue : ScriptableObject
 	{
 		public bool looping = false;

@@ -6,20 +6,20 @@ using Erethan.ScriptableServices.Pool;
 namespace Erethan.AudioService
 {
 
-    public class AudioSystemBehaviour : MonoBehaviour
+    public class AudioServiceBehaviour : MonoBehaviour
     {
-        public AudioSystem System { get; private set; }
+        public AudioService Service { get; private set; }
         private List<AudioPlayOrder> _ongoingOrders;
 
         private ComponentPool<AudioSource> _pool;
 
-        public static AudioSystemBehaviour CreateNew(AudioSystem system)
+        public static AudioServiceBehaviour CreateNew(AudioService service)
         {
-            AudioSystemBehaviour instance = new GameObject()
-                .AddComponent<AudioSystemBehaviour>();
-            instance.System = system;
+            AudioServiceBehaviour instance = new GameObject()
+                .AddComponent<AudioServiceBehaviour>();
+            instance.Service = service;
             DontDestroyOnLoad(instance.gameObject);
-            instance.gameObject.name = $"{typeof(AudioSystemBehaviour)}";
+            instance.gameObject.name = $"{typeof(AudioServiceBehaviour)}";
             instance.Initialize();
             return instance;
         }
@@ -30,10 +30,10 @@ namespace Erethan.AudioService
 
             _pool = new ComponentPool<AudioSource>()
             {
-                Prefab = System.AudioSourcePrefab
+                Prefab = Service.AudioSourcePrefab
             };
             _pool.SetParent(transform);
-            _pool.Prewarm(System.InitialPoolSize);
+            _pool.Prewarm(Service.InitialPoolSize);
         }
 
         public void PlayAudio(AudioPlayOrder order)

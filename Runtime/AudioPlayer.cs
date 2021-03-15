@@ -9,7 +9,7 @@ namespace Erethan.AudioService
 
 	public class AudioPlayer : MonoBehaviour
 	{
-		[SerializeField] private AudioSystem system = default;
+		[SerializeField] private AudioService service = default;
 		[SerializeField] private AudioCue _audioCue = default;
 		[SerializeField] private bool _playOnStart = default;
 
@@ -40,7 +40,7 @@ namespace Erethan.AudioService
 					{
 						continue;
 					}
-					system.StopAudio(_ongoingOrders[i]);
+					service.StopAudio(_ongoingOrders[i]);
 				}
 				_ongoingOrders.Clear();
 			}
@@ -67,7 +67,7 @@ namespace Erethan.AudioService
 				order.Finish += OnOrderFinish;
 				_ongoingOrders.Add(order);
 
-				system.PlayAudio(order);
+				service.PlayAudio(order);
 			}
 		}
 
@@ -75,7 +75,7 @@ namespace Erethan.AudioService
 		{
 			foreach (var order in _ongoingOrders)
 			{
-				system.StopAudio(order);
+				service.StopAudio(order);
 			}
 		}
 

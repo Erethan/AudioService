@@ -6,17 +6,17 @@ using UnityEngine;
 namespace Erethan.AudioService
 {
 
-    [CreateAssetMenu(fileName = "Audio System", menuName = "Inside/Audio/Audio System")]
-    public class AudioSystem : ScriptableObject
+    [CreateAssetMenu(fileName = "Audio Service", menuName = "Erethan/Audio/Audio Service")]
+    public class AudioService : ScriptableObject
     {
-        private AudioSystemBehaviour _controllerBehaviour;
-        private AudioSystemBehaviour ControllerBehaviour
+        private AudioServiceBehaviour _controllerBehaviour;
+        private AudioServiceBehaviour ControllerBehaviour
         {
             get
             {
                 if (_controllerBehaviour == null)
                 {
-                    _controllerBehaviour = AudioSystemBehaviour.CreateNew(this);
+                    _controllerBehaviour = AudioServiceBehaviour.CreateNew(this);
                 }
                 return _controllerBehaviour;
             }

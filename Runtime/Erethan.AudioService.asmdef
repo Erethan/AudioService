@@ -1,0 +1,15 @@
+{
+    "name": "Erethan.AudioService",
+    "references": [
+        "GUID:9f3fdb8ff26019d43b3ba8b682a09e7e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

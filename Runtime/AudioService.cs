@@ -1,37 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+﻿using UnityEngine;
+using Erethan.ScriptableServices;
 
 namespace Erethan.AudioService
 {
 
     [CreateAssetMenu(fileName = "Audio Service", menuName = "Erethan/Audio/Audio Service")]
-    public class AudioService : ScriptableObject
+    public class AudioService : ScriptableService<AudioServiceBehaviour>
     {
-        private AudioServiceBehaviour _controllerBehaviour;
-        private AudioServiceBehaviour ControllerBehaviour
+        [Header("Audio Source Pool")]
+        [SerializeField] private int _initialPoolSize = default;
+        [SerializeField] private AudioSource _audioSourcePrefab = default;
+        
+        public int InitialPoolSize => _initialPoolSize;
+        public AudioSource AudioSourcePrefab => _audioSourcePrefab;
+
+        protected override void ConfigureBehaviour()
         {
-            get
-            {
-                if (_controllerBehaviour == null)
-                {
-                    _controllerBehaviour = AudioServiceBehaviour.CreateNew(this);
-                }
-                return _controllerBehaviour;
-            }
-            set
-            {
-                _controllerBehaviour = value;
-            }
+            ControllerBehaviour.SourcePrefab = _audioSourcePrefab;
+            ControllerBehaviour.InitialPoolSize = _initialPoolSize;
         }
-
-        public void Initialize()
-        {
-            _ = ControllerBehaviour;
-        }
-
-
 
         public void PlayAudio(AudioPlayOrder order)
         {
@@ -42,13 +29,6 @@ namespace Erethan.AudioService
         {
             ControllerBehaviour.StopAudio(order);
         }
-
-
-        [Header("Audio Source Pool")]
-        [SerializeField] private int _initialPoolSize = default;
-        [SerializeField] private AudioSource _audioSourcePrefab = default;
-        public int InitialPoolSize => _initialPoolSize;
-        public AudioSource AudioSourcePrefab => _audioSourcePrefab;
 
     }
 }

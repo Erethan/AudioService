@@ -1,39 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Erethan.ScriptableServices;
 using Erethan.ScriptableServices.Pool;
 
 namespace Erethan.AudioService
 {
 
-    public class AudioServiceBehaviour : MonoBehaviour
+    public class AudioServiceBehaviour : ScriptableServiceBehaviour
     {
-        public AudioService Service { get; private set; }
+        public AudioSource SourcePrefab { get; set; }
+        public int InitialPoolSize { get; set; }
         private List<AudioPlayOrder> _ongoingOrders;
 
         private ComponentPool<AudioSource> _pool;
 
-        public static AudioServiceBehaviour CreateNew(AudioService service)
-        {
-            AudioServiceBehaviour instance = new GameObject()
-                .AddComponent<AudioServiceBehaviour>();
-            instance.Service = service;
-            DontDestroyOnLoad(instance.gameObject);
-            instance.gameObject.name = $"{typeof(AudioServiceBehaviour)}";
-            instance.Initialize();
-            return instance;
-        }
-
-        private void Initialize()
+        public override void Initialize()
         {
             _ongoingOrders = new List<AudioPlayOrder>();
 
             _pool = new ComponentPool<AudioSource>()
             {
-                Prefab = Service.AudioSourcePrefab
+                Prefab = SourcePrefab
             };
             _pool.SetParent(transform);
-            _pool.Prewarm(Service.InitialPoolSize);
+            _pool.Prewarm(InitialPoolSize);
         }
 
         public void PlayAudio(AudioPlayOrder order)
@@ -83,5 +74,6 @@ namespace Erethan.AudioService
             order.UpdateState(AudioPlayOrder.PlayState.Finished);
             order.Source = null;
         }
+
     }
 }

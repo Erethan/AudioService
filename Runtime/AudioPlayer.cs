@@ -13,12 +13,7 @@ namespace Erethan.AudioService
 		[SerializeField] private AudioCue _audioCue = default;
 		[SerializeField] private bool _playOnStart = default;
 
-		[SerializeField] private UnityEvent FinishEvent = default;
-
-		/*
-		[Header("Configuration")]
-		[SerializeField] private AudioConfigurationSO _audioConfiguration = default;
-		*/
+		[SerializeField] private UnityEvent _finish = default;
 
 		private List<AudioPlayOrder> _ongoingOrders;
 
@@ -28,30 +23,7 @@ namespace Erethan.AudioService
 			if (_playOnStart)
 				StartCoroutine(PlayDelayed());
 		}
-
-		private void Update()
-		{
-			if (Input.GetKeyDown(KeyCode.S))
-			{
-				for (int i = 0; i < _ongoingOrders.Count; i++)
-				{
-
-					if (!(_ongoingOrders[i].State == AudioPlayOrder.PlayState.Playing))
-					{
-						continue;
-					}
-					service.StopAudio(_ongoingOrders[i]);
-				}
-				_ongoingOrders.Clear();
-			}
-			else if (Input.GetKeyDown(KeyCode.P))
-			{
-				if (_ongoingOrders.Count == 0)
-				{
-					PlayAudioCue();
-				}
-			}
-		}
+	
 
 		private IEnumerator PlayDelayed()
 		{
@@ -64,6 +36,7 @@ namespace Erethan.AudioService
 		{
 			foreach (var order in _audioCue.GetNewOrders())
 			{
+				order.Origin = transform;
 				order.Finish += OnOrderFinish;
 				_ongoingOrders.Add(order);
 
@@ -86,7 +59,7 @@ namespace Erethan.AudioService
 
 			if (finishedOrder.State == AudioPlayOrder.PlayState.Finished)
 			{
-				FinishEvent.Invoke();
+				_finish.Invoke();
 			}
 		}
 

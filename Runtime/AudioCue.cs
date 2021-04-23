@@ -11,7 +11,10 @@ namespace Erethan.AudioService
 	[CreateAssetMenu(fileName = "new AudioCue", menuName = "Erethan/Audio/Audio Cue")]
 	public class AudioCue : ScriptableObject
 	{
-		public bool looping = false;
+		[Range(0, 1)] [SerializeField] private float _volume = 1;
+		[Range(-3, 3)] [SerializeField] private float _pitch = 1;
+		[Range(0, 1)] [SerializeField] private float _spacialBlend = 1;
+		[SerializeField] private bool _loop = false;
 		[SerializeField] private AudioClipsGroup[] _audioClipGroups = default;
 
 
@@ -23,10 +26,13 @@ namespace Erethan.AudioService
 			{
 				newOrders[i] = new AudioPlayOrder()
 				{
-					audioCue = this,
+					AudioCue = this,
 					Clip = _audioClipGroups[i].GetNextClip(),
-					Loop = looping,
-					State = AudioPlayOrder.PlayState.Playing
+					Loop = _loop,
+					Volume = _volume,
+					Pitch = _pitch,
+					SpacialBlend = _spacialBlend,
+					State = AudioPlayOrder.PlayState.Ordered
 				};
 
 			}
@@ -114,9 +120,12 @@ namespace Erethan.AudioService
 	[Serializable]
 	public class AudioPlayOrder
 	{
-
+		public Transform Origin { get; set; }
+		public float Volume { get; set; } = 1;
+		public float Pitch { get; set; } = 1;
 		public bool Loop { get; set; }
-		public AudioCue audioCue { get; set; }
+		public float SpacialBlend;
+		public AudioCue AudioCue { get; set; }
 		public AudioClip Clip { get; set; }
 		public PlayState State { get; set; }
 		internal AudioSource Source { get; set; }

@@ -30,9 +30,12 @@ namespace Erethan.AudioService
         public void PlayAudio(AudioPlayOrder order)
         {
             order.Source = _pool.Request();
-
             order.Source.clip = order.Clip;
             order.Source.loop = order.Loop;
+            order.Source.volume = order.Volume;
+            order.Source.pitch = order.Pitch;
+            order.Source.spatialBlend = order.SpacialBlend;
+            order.Source.transform.parent = order.Origin;
 
 
             StartCoroutine(SourcePlayingRoutine(order));
@@ -59,12 +62,8 @@ namespace Erethan.AudioService
             order.UpdateState(AudioPlayOrder.PlayState.Playing);
             _ongoingOrders.Add(order);
 
-            while (order.Source != null &&
-                order.Source.isPlaying)
-            {
-                yield return new WaitForSeconds(order.Clip.length);
-            }
-
+            
+            yield return new WaitWhile(() => order.Source.isPlaying);
             if (order.Source == null)
             {
                 yield break;

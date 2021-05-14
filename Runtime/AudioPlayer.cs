@@ -17,15 +17,18 @@ namespace Erethan.AudioService
 
 		private List<AudioPlayOrder> _ongoingOrders;
 
-		private void Start()
+		private void Awake()
 		{
 			_ongoingOrders = new List<AudioPlayOrder>();
+		}
+
+        private void Start()
+        {
 			if (_playOnStart)
 				StartCoroutine(PlayDelayed());
-		}
-	
+        }
 
-		private IEnumerator PlayDelayed()
+        private IEnumerator PlayDelayed()
 		{
 			yield return new WaitForSeconds(.1f);
 

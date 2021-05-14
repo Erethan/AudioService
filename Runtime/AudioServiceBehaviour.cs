@@ -27,6 +27,16 @@ namespace Erethan.AudioService
             _pool.Prewarm(InitialPoolSize);
         }
 
+        private void Update()
+        {
+            foreach (var order in _ongoingOrders)
+            {
+                if (order.Origin == null)
+                    continue;
+                order.Source.transform.position = order.Origin.position;
+            }
+        }
+
         public void PlayAudio(AudioPlayOrder order)
         {
             order.Source = _pool.Request();
@@ -35,8 +45,6 @@ namespace Erethan.AudioService
             order.Source.volume = order.Volume;
             order.Source.pitch = order.Pitch;
             order.Source.spatialBlend = order.SpacialBlend;
-            order.Source.transform.parent = order.Origin;
-
 
             StartCoroutine(SourcePlayingRoutine(order));
         }

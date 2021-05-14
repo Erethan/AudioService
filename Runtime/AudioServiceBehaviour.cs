@@ -27,6 +27,16 @@ namespace Erethan.AudioService
             _pool.Prewarm(InitialPoolSize);
         }
 
+        private void Update()
+        {
+            foreach (var order in _ongoingOrders)
+            {
+                if (order.Origin == null)
+                    continue;
+                order.Source.transform.position = order.Origin.position;
+            }
+        }
+
         public void PlayAudio(AudioPlayOrder order)
         {
             order.Source = _pool.Request();
@@ -35,8 +45,6 @@ namespace Erethan.AudioService
             order.Source.volume = order.Volume;
             order.Source.pitch = order.Pitch;
             order.Source.spatialBlend = order.SpacialBlend;
-            order.Source.transform.parent = order.Origin;
-
 
             StartCoroutine(SourcePlayingRoutine(order));
         }
@@ -50,10 +58,9 @@ namespace Erethan.AudioService
             if (!_ongoingOrders.Contains(order))
                 return;
             order.Source.Stop();
-            _pool.Return(order.Source);
-            _ongoingOrders.Remove(order);
             order.UpdateState(AudioPlayOrder.PlayState.Stopped);
-            order.Source = null;
+            _ongoingOrders.Remove(order);
+            _pool.Return(order.Source);
         }
 
         private IEnumerator SourcePlayingRoutine(AudioPlayOrder order)
@@ -64,14 +71,14 @@ namespace Erethan.AudioService
 
             
             yield return new WaitWhile(() => order.Source.isPlaying);
-            if (order.Source == null)
+            if (!_ongoingOrders.Contains(order))
             {
                 yield break;
             }
-            _pool.Return(order.Source);
-            _ongoingOrders.Remove(order);
+
             order.UpdateState(AudioPlayOrder.PlayState.Finished);
-            order.Source = null;
+            _ongoingOrders.Remove(order);
+            _pool.Return(order.Source);
         }
 
     }

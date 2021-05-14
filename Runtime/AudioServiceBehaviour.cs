@@ -58,10 +58,9 @@ namespace Erethan.AudioService
             if (!_ongoingOrders.Contains(order))
                 return;
             order.Source.Stop();
-            _pool.Return(order.Source);
-            _ongoingOrders.Remove(order);
             order.UpdateState(AudioPlayOrder.PlayState.Stopped);
-            order.Source = null;
+            _ongoingOrders.Remove(order);
+            _pool.Return(order.Source);
         }
 
         private IEnumerator SourcePlayingRoutine(AudioPlayOrder order)
@@ -72,14 +71,14 @@ namespace Erethan.AudioService
 
             
             yield return new WaitWhile(() => order.Source.isPlaying);
-            if (order.Source == null)
+            if (!_ongoingOrders.Contains(order))
             {
                 yield break;
             }
-            _pool.Return(order.Source);
-            _ongoingOrders.Remove(order);
+
             order.UpdateState(AudioPlayOrder.PlayState.Finished);
-            order.Source = null;
+            _ongoingOrders.Remove(order);
+            _pool.Return(order.Source);
         }
 
     }

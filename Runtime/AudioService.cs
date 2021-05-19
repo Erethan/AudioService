@@ -3,11 +3,9 @@ using Erethan.ScriptableServices;
 
 namespace Erethan.AudioService
 {
-
     [CreateAssetMenu(fileName = "Audio Service", menuName = "Erethan/Audio/Audio Service")]
     public class AudioService : ScriptableService<AudioServiceBehaviour>
     {
-
         [Header("Scene Change")]
         [SerializeField] private bool _fadeOnSceneChange = false;
         [SerializeField] private float _fadeSeconds = 0.5f;

@@ -119,6 +119,8 @@ namespace Erethan.AudioService
         {
             for (int i = _ongoingOrders.Count - 1; i >= 0; i--)
             {
+                if(!_ongoingOrders[i].SceneScoped)
+                    continue;
                 if(FadeOnSceneChange)
                 {
                     FadeStopAudio(_ongoingOrders[i], FadeSeconds);

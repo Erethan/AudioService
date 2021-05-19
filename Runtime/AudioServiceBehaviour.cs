@@ -1,16 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Erethan.ScriptableServices;
 using Erethan.ScriptableServices.Pool;
 
 namespace Erethan.AudioService
 {
-
     public class AudioServiceBehaviour : ScriptableServiceBehaviour
     {
         public AudioSource SourcePrefab { get; set; }
         public int InitialPoolSize { get; set; }
+        
+        public bool FadeOnSceneChange { get; set; }
+        public float FadeSeconds{ get; set; }
+
         private List<AudioPlayOrder> _ongoingOrders;
 
         private ComponentPool<AudioSource> _pool;
@@ -18,6 +22,7 @@ namespace Erethan.AudioService
         public override void Initialize()
         {
             _ongoingOrders = new List<AudioPlayOrder>();
+            SceneManager.sceneUnloaded += OnActiveSceneChanged;
 
             _pool = new ComponentPool<AudioSource>()
             {
@@ -26,6 +31,7 @@ namespace Erethan.AudioService
             _pool.SetParent(transform);
             _pool.Prewarm(InitialPoolSize);
         }
+
 
         private void Update()
         {
@@ -49,6 +55,7 @@ namespace Erethan.AudioService
             StartCoroutine(SourcePlayingRoutine(order));
         }
 
+
         public void StopAudio(AudioPlayOrder order)
         {
             if (order.State != AudioPlayOrder.PlayState.Playing
@@ -61,6 +68,32 @@ namespace Erethan.AudioService
             order.UpdateState(AudioPlayOrder.PlayState.Stopped);
             _ongoingOrders.Remove(order);
             _pool.Return(order.Source);
+        }
+
+        public void FadeStopAudio(AudioPlayOrder order, float fadeSeconds = 1f)
+        {
+            if(fadeSeconds <= 0)
+            {
+                StopAudio(order);
+                return;
+            }    
+
+            StartCoroutine(FadeStopRoutine(order, fadeSeconds));
+        }
+
+        private IEnumerator FadeStopRoutine(AudioPlayOrder order, float fadeSeconds)
+        {
+            float startVolume = order.Source.volume;
+            float startTime = Time.time;
+            while (order.Source.volume > 0)
+            {
+                yield return null;
+                if (order.State != AudioPlayOrder.PlayState.Playing)
+                    yield break;
+                float volumeRatio = 1 - (Time.time - startTime)/fadeSeconds;
+                order.Source.volume = Mathf.Clamp01(startVolume * volumeRatio);
+            }
+            StopAudio(order);
         }
 
         private IEnumerator SourcePlayingRoutine(AudioPlayOrder order)
@@ -81,5 +114,32 @@ namespace Erethan.AudioService
             _pool.Return(order.Source);
         }
 
+
+        private void OnActiveSceneChanged(Scene unloadedScene)
+        {
+            for (int i = _ongoingOrders.Count - 1; i >= 0; i--)
+            {
+                if(!_ongoingOrders[i].SceneScoped)
+                    continue;
+                if(FadeOnSceneChange)
+                {
+                    FadeStopAudio(_ongoingOrders[i], FadeSeconds);
+                }
+                else
+                {
+                    StopAudio(_ongoingOrders[i]);
+                }
+            }
+            
+        }
+
+        private void OnDestroy()
+        {
+            SceneManager.sceneUnloaded -= OnActiveSceneChanged;
+        }
+
+
     }
+
+    
 }

@@ -11,6 +11,9 @@ namespace Erethan.AudioService
 	[CreateAssetMenu(fileName = "new AudioCue", menuName = "Erethan/Audio/Audio Cue")]
 	public class AudioCue : ScriptableObject
 	{
+		[Tooltip("Scene scoped AudioCue objects are stopped when scenes are unloaded")]
+		[SerializeField] private bool _sceneScoped = true;
+
 		[Range(0, 1)] [SerializeField] private float _volume = 1;
 		[Range(-3, 3)] [SerializeField] private float _pitch = 1;
 		[Range(0, 1)] [SerializeField] private float _spacialBlend = 1;
@@ -31,6 +34,7 @@ namespace Erethan.AudioService
 					Loop = _loop,
 					Volume = _volume,
 					Pitch = _pitch,
+					SceneScoped = _sceneScoped,
 					SpacialBlend = _spacialBlend,
 					State = AudioPlayOrder.PlayState.Ordered
 				};
@@ -124,6 +128,7 @@ namespace Erethan.AudioService
 		public float Volume { get; set; } = 1;
 		public float Pitch { get; set; } = 1;
 		public bool Loop { get; set; }
+		public bool SceneScoped { get; set; }
 		public float SpacialBlend;
 		public AudioCue AudioCue { get; set; }
 		public AudioClip Clip { get; set; }

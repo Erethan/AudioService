@@ -54,6 +54,14 @@ namespace Erethan.AudioService
 				service.StopAudio(order);
 			}
 		}
+		
+		public void StopAudioCue(float fadeSeconds)
+        {
+			foreach (var order in _ongoingOrders)
+			{
+				service.FadeStopAudio(order, fadeSeconds);
+			}
+		}
 
 		private void OnOrderFinish(AudioPlayOrder finishedOrder)
 		{

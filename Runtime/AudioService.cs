@@ -20,15 +20,9 @@ namespace Erethan.AudioService
             ControllerBehaviour.InitialPoolSize = _initialPoolSize;
         }
 
-        public void PlayAudio(AudioPlayOrder order)
-        {
-            ControllerBehaviour.PlayAudio(order);
-        }
-
-        public void StopAudio(AudioPlayOrder order)
-        {
-            ControllerBehaviour.StopAudio(order);
-        }
+        public void PlayAudio(AudioPlayOrder order) => ControllerBehaviour.PlayAudio(order);
+        public void StopAudio(AudioPlayOrder order) => ControllerBehaviour.StopAudio(order);
+        public void FadeStopAudio(AudioPlayOrder order, float fadeSeconds = 1f) => ControllerBehaviour.FadeStopAudio(order, fadeSeconds);
 
     }
 }

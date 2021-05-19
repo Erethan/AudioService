@@ -7,11 +7,14 @@ using Erethan.ScriptableServices.Pool;
 
 namespace Erethan.AudioService
 {
-
     public class AudioServiceBehaviour : ScriptableServiceBehaviour
     {
         public AudioSource SourcePrefab { get; set; }
         public int InitialPoolSize { get; set; }
+        
+        public bool FadeOnSceneChange { get; set; }
+        public float FadeSeconds{ get; set; }
+
         private List<AudioPlayOrder> _ongoingOrders;
 
         private ComponentPool<AudioSource> _pool;
@@ -80,7 +83,6 @@ namespace Erethan.AudioService
 
         private IEnumerator FadeStopRoutine(AudioPlayOrder order, float fadeSeconds)
         {
-            
             float startVolume = order.Source.volume;
             float startTime = Time.time;
             while (order.Source.volume > 0)
@@ -117,7 +119,14 @@ namespace Erethan.AudioService
         {
             for (int i = _ongoingOrders.Count - 1; i >= 0; i--)
             {
-                StopAudio(_ongoingOrders[i]);
+                if(FadeOnSceneChange)
+                {
+                    FadeStopAudio(_ongoingOrders[i], FadeSeconds);
+                }
+                else
+                {
+                    StopAudio(_ongoingOrders[i]);
+                }
             }
             
         }

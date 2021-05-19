@@ -115,10 +115,11 @@ namespace Erethan.AudioService
 
         private void OnActiveSceneChanged(Scene unloadedScene)
         {
-            foreach (var order in _ongoingOrders)
+            for (int i = _ongoingOrders.Count - 1; i >= 0; i--)
             {
-                StopAudio(order);
+                StopAudio(_ongoingOrders[i]);
             }
+            
         }
 
         private void OnDestroy()
